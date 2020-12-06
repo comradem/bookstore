@@ -1,6 +1,7 @@
 const express = require('express');
 const config = require('config');
 const database = require('mongoose');
+const path =require('path');
 
 const app = express();
 const PORT = config.get('port') || 5000;
@@ -13,6 +14,13 @@ app.use('/api/store',require('./routes/store.routes'))
 app.use('/api/user',require('./routes/user.routes'))
 app.use('/api/admin',require('./routes/admin.routes'))
 
+//integration FE with BE
+if (process.env.NODE_ENV === 'production'){
+    app.use(express.static(path.join(__dirname,'book_store','build')))
+    app.get('*', (req,res)=> {
+        res.sendFile(path.resolve(__dirname,'book_store','build','index.html'))
+    })
+}
 
 
 async function start() {

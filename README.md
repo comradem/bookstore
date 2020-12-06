@@ -1,6 +1,7 @@
 # bookstore
 ###
 - How to run:
+1.
 2. cd book_store
 3. npm i 
 1. cd .. && npm i 
