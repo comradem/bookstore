@@ -5,16 +5,54 @@ import Modal from 'react-bootstrap/Modal';
 import Form from "react-bootstrap/Form";
 
 import '../styles/fd-card.css'
+import {useHttp} from '../hooks/http.hook';
 
 const FDCard = (props) => {
 
-    const {title, price, searchKeywords, image} = props.dataObject;
+    const {title, price, searchKeywords, image, isbn13} = props.dataObject;
     const {addItemToBasket, isManager, dataObject, updateData} = props;
     const [showModal, setShowModal] = useState(false);
     const [newPrice, setNewPrice] = useState(price);
     const [newProductImage, setNewProductImage] = useState(image);
     const [newProductName, setNewProductName] = useState(title);
     const [newSearchKeywords, setNewSearchKeywords] = useState(searchKeywords);
+    const [newIsbn, setNewIsbn] = useState(isbn13);
+    const {request} = useHttp();
+
+    const tmp = localStorage.getItem('userData');
+    const userData = JSON.parse(tmp);
+    let uToken = '';
+    let userType = 'User';
+    if (userData) {
+        uToken = userData.userToken;
+        userType = userData.userType;
+    }
+
+    const updateCard = async () => {
+        //body:
+        // {
+        //     "_id": "5fcb33e77b9a0507398ba93e",
+        //     "title": "No No Node.js new book!!!!",
+        //     "subtitle": "new released book another time, new data is updated",
+        //     "isbn13": "3781449333607",
+        //     "price": "12.00",
+        //     "image": "https://itbook.store/img/books/9781449333607.png",
+        //     "url": "https://itbook.store/books/9781449333607",
+        //     "searchKeywords": "new, no, new book, new words"
+        // }
+        // let body = dataObject);
+        // console.log("dataObject is: "+ JSON.stringify(dataObject,null,2));
+        try {
+            console.log('****** CALLED updateBook with token: ' + uToken);
+            let response = await request('api/admin/updateBook', 'POST', props.dataObject,{
+                Authorization: `Bearer ${uToken}`,
+            });
+            // response = await response.json();
+            console.log("updated a book : "+ response);
+        } catch (e) {
+            // handled in BE
+        }
+    };
 
     const handleEdit = () => {
         open();
@@ -29,29 +67,34 @@ const FDCard = (props) => {
     };
 
     const handleItemUpdate = (e) => {
-        console.log('why u no listen');
-        console.log(e);
+        console.log(JSON.stringify(dataObject,null,2));
+        updateCard();
     };
 
     const handlePriceChange = (e) => {
-        dataObject.originalPrice = e.target.value;
+        dataObject.price = e.target.value;
         setNewPrice(e.target.value);
     };
 
     const handleProductImageChange = (e) => {
-        dataObject.productImage = e.target.value;
+        dataObject.image = e.target.value;
         setNewProductImage(e.target.value);
     };
 
     const handleProductNameChange = (e) => {
-        dataObject.productName = e.target.value;
+        dataObject.title = e.target.value;
         setNewProductName(e.target.value);
     };
 
     const handleKeywordsChange = (e) => {
-        dataObject.searchKeywords = dataObject.searchKeywords.concat(e.target.value.split(','));
+        dataObject.searchKeywords = e.target.value;
         setNewSearchKeywords(e.target.value);
     };
+
+    const handleIsbnChange = (e) => {
+        dataObject.searchKeywords = e.target.value;
+        setNewIsbn(e.target.value);
+    }
 
 
     return (
@@ -69,7 +112,7 @@ const FDCard = (props) => {
                     addItemToBasket(ev, props.dataObject);
                 }
                 }>Add + </Button> : null}
-                {isManager ?
+                {userType === 'Admin' ?
                     <Fragment>
                         <Button className='edit-btn' name='edit' variant='danger'
                                 onClick={() => handleEdit()}>Edit</Button>
@@ -96,6 +139,10 @@ const FDCard = (props) => {
                                     <Form.Group controlId="formOriginalPrice">
                                         <Form.Label>Price</Form.Label>
                                         <Form.Control placeholder="price" value={newPrice} onChange={(e) => handlePriceChange(e)}/>
+                                    </Form.Group>
+                                    <Form.Group controlId="formIsbn13">
+                                        <Form.Label>Price</Form.Label>
+                                        <Form.Control placeholder="isbn" value={newIsbn} onChange={(e) => handleIsbnChange(e)}/>
                                     </Form.Group>
                                     <Form.Group controlId="formSearchKeywords">
                                         <Form.Label>Keywords</Form.Label>

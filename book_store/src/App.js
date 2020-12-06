@@ -52,7 +52,8 @@ function App() {
     const updateItem = (e, item) => {
         switch (e.target.name) {
             case 'delete':
-                console.log('removing item from the store' + item);
+                console.log('removing item from the store' + item.isbn13);
+
                 storeData.splice(storeData.indexOf(item), 1);
                 break;
             case 'edit':
