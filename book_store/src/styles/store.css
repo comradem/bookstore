@@ -1,0 +1,5 @@
+.p-store {
+    display: flex;
+    justify-content: normal;
+    flex-wrap: wrap;
+}

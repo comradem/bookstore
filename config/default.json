@@ -1,0 +1,5 @@
+{
+  "port": 5000,
+  "mongodb": "mongodb+srv://codeoasis:1qse42w3@nebulacluster.rh5xi.mongodb.net/bookstore?retryWrites=true&w=majority",
+  "jwtsecret": "jwtsecret"
+}
